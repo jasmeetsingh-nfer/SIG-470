@@ -1,0 +1,103 @@
+{
+  "version": true,
+  "size": 500,
+  "sort": [
+    {
+      "time_backend_response": {
+        "order": "desc",
+        "unmapped_type": "boolean"
+      }
+    }
+  ],
+  "_source": {
+    "excludes": []
+  },
+  "aggs": {
+    "2": {
+      "date_histogram": {
+        "field": "@timestamp",
+        "fixed_interval": "30m",
+        "time_zone": "Asia/Calcutta",
+        "min_doc_count": 1
+      }
+    }
+  },
+  "stored_fields": [
+    "*"
+  ],
+  "script_fields": {},
+  "docvalue_fields": [
+    {
+      "field": "@timestamp",
+      "format": "date_time"
+    }
+  ],
+  "query": {
+    "bool": {
+      "must": [],
+      "filter": [
+        {
+          "match_all": {}
+        },
+        {
+          "bool": {
+            "should": [
+              {
+                "match_phrase": {
+                  "endpoint": "/semantics/v1/compute_signals"
+                }
+              },
+              {
+                "match_phrase": {
+                  "endpoint": "/semantics/v2/compute_signals"
+                }
+              },
+              {
+                "match_phrase": {
+                  "endpoint": "/semantics/v1/compute_significance"
+                }
+              },
+              {
+                "match_phrase": {
+                  "endpoint": "/semantics/v2/compute_significance"
+                }
+              }
+            ],
+            "minimum_should_match": 1
+          }
+        },
+        {
+          "range": {
+            "@timestamp": {
+              "format": "strict_date_optional_time",
+              "gte": "2021-03-27T18:27:22.851Z",
+              "lte": "2021-03-28T18:27:22.851Z"
+            }
+          }
+        }
+      ],
+      "should": [],
+      "must_not": [
+        {
+          "match_phrase": {
+            "endpoint": {
+              "query": "high_performance"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "highlight": {
+    "pre_tags": [
+      "@kibana-highlighted-field@"
+    ],
+    "post_tags": [
+      "@/kibana-highlighted-field@"
+    ],
+    "fields": {
+      "*": {}
+    },
+    "fragment_size": 2147483647
+  }
+}
